@@ -18,9 +18,9 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app); // Attach express app to HTTP server
 
-// --- CORS ---
+
 const corsOptions = {
-  origin: "http://localhost:5173", // Change for production
+  origin: ["http://localhost:5173", "https://games-five-gold.vercel.app/"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -38,11 +38,11 @@ app.use("/api/invite", inviteRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
-  .catch((err) => console.error("❌ MongoDB Error:", err));
+  .catch((err) => console.error(" MongoDB Error:", err));
 
 // --- SIMPLE TEST ROUTE ---
 app.get("/", (req, res) => {
-  res.json({ message: "Backend is running 🚀" });
+  res.json({ message: "Backend is running " });
 });
 
 // --- SOCKET.IO SETUP ---
