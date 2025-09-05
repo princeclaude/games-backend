@@ -34,8 +34,8 @@ router.get("/:id", verifyToken, async (req, res) => {
 // ✅ Get all users (public list)
 router.get("/", verifyToken, async (req, res) => {
   try {
-    const currentUserId = req.user.Id;
-    const users = await User.find({ _id: { $ne: new mongoose.Types.ObjectId(currentUserId) } }).select("-password"); 
+    const currentUserId = req.userId;
+    const users = await User.find({ _id: { $ne: currentUserId } }).select("-password"); 
     console.log("current user exclude", currentUserId)
     res.status(200).json(users);
   } catch (error) {

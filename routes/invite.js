@@ -15,7 +15,7 @@ router.post("/", verifyToken, async (req, res) => {
 
     console.log("Invite request:", { fromUsername, toUsername, gameName, type });
 
-    // ⿡ Find invited user (case-insensitive)
+    
     const invitedUser = await User.findOne({
       username: toUsername.toLowerCase(),
     });
