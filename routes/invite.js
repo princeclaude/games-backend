@@ -40,6 +40,7 @@ router.post("/", verifyToken, async (req, res) => {
 
     // ⿣ Emit real-time event to invited user
     io.to(invitedUser.username).emit("new-invite", {
+      message: `${fromUsername} invites you to play ${gameName}`,
       from: fromUsername,
       gameName,
       type,
@@ -49,7 +50,7 @@ router.post("/", verifyToken, async (req, res) => {
     if (invitedUser.PushSubscription) {
       await sendPushNotification(
         invitedUser.PushSubscription,
-        "🎮 New Game Invite",
+        "New Game Invite",
         `${fromUsername} invited you to play ${gameName}`
       );
     }
@@ -161,7 +162,7 @@ router.post("/decline", verifyToken, async (req, res) => {
       data: invitation,
     });
   } catch (error) {
-    console.error("🔥 Error declining invitation:", error);
+    console.error("Error declining invitation:", error);
     return res.status(500).json({
       message: "Error declining invitation",
       error: error.message,
