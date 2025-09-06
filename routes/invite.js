@@ -68,7 +68,7 @@ router.post("/", verifyToken, async (req, res) => {
   }
 });
 
-// ✅ Get all pending invites for logged-in user
+
 // ✅ Get all pending invites for logged-in user
 router.get("/", verifyToken, async (req, res) => {
   try {
@@ -93,6 +93,7 @@ router.get("/", verifyToken, async (req, res) => {
 }
 });
 // ✅ Accept invite
+// ✅ Accept invite
 router.post("/accept", verifyToken, async (req, res) => {
   try {
     const { invitationId } = req.body;
@@ -111,15 +112,21 @@ router.post("/accept", verifyToken, async (req, res) => {
     invitation.status = "accepted";
     await invitation.save();
 
+    // Build a roomId both clients will use
+    const roomId = `lobby_${invitation._id}`;
+
+    // Notify the inviter in real-time and include the roomId
     io.to(invitation.from).emit("invite-accepted", {
       by: username,
       gameName: invitation.gameName,
-      roomId: `lobby_${invitation._id}`,
+      roomId,
     });
 
+    // Return roomId in the HTTP response so accepter can navigate immediately
     return res.status(200).json({
       message: "Invitation accepted",
       data: invitation,
+      roomId,
     });
   } catch (error) {
     console.error("Error accepting invitation:", error);
@@ -129,8 +136,6 @@ router.post("/accept", verifyToken, async (req, res) => {
     });
   }
 });
-
-
 
 // ✅ Decline invite
 router.post("/decline", verifyToken, async (req, res) => {
@@ -151,7 +156,8 @@ router.post("/decline", verifyToken, async (req, res) => {
     invitation.status = "declined";
     await invitation.save();
 
-    io.to(invitation.from).emit("invite-accepted", {
+    // Notify inviter that invite was declined
+    io.to(invitation.from).emit("invite-declined", {
       by: username,
       gameName: invitation.gameName,
       invitationId: invitation._id,
@@ -166,8 +172,8 @@ router.post("/decline", verifyToken, async (req, res) => {
     return res.status(500).json({
       message: "Error declining invitation",
       error: error.message,
-    });
-  }
+});
+}
 });
 
 export default router;
